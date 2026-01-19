@@ -1,0 +1,85 @@
+services:
+  gateway:
+    build:
+      context: ./services/gateway
+      target: runner
+    image: ${DOCKERHUB_NS:-local}/gateway:latest
+    container_name: gateway
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - SERVICE_NAME=gateway
+      - ROUTE_USERS=http://users:3001
+      - ROUTE_COURSES=http://courses:3002
+      - ROUTE_VIDEOS=http://videos:3003
+    depends_on:
+      - users
+      - courses
+      - videos
+    volumes:
+      - gateway_logs:/var/log/app
+    networks:
+      - appnet
+
+  users:
+    build:
+      context: ./services/users
+      target: runner
+    image: ${DOCKERHUB_NS:-local}/users:latest
+    container_name: users
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - SERVICE_NAME=users
+    volumes:
+      - users_logs:/var/log/app
+    expose:
+      - "3001"
+    networks:
+      - appnet
+
+  courses:
+    build:
+      context: ./services/courses
+      target: runner
+    image: ${DOCKERHUB_NS:-local}/courses:latest
+    container_name: courses
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - SERVICE_NAME=courses
+    volumes:
+      - courses_logs:/var/log/app
+    expose:
+      - "3002"
+    networks:
+      - appnet
+
+  videos:
+    build:
+      context: ./services/videos
+      target: runner
+    image: ${DOCKERHUB_NS:-local}/videos:latest
+    container_name: videos
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - SERVICE_NAME=videos
+    volumes:
+      - videos_logs:/var/log/app
+    expose:
+      - "3003"
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  gateway_logs:
+  users_logs:
+  courses_logs:
+  videos_logs:

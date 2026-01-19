@@ -1,0 +1,15 @@
+{
+  "name": "videos-service",
+  "version": "1.0.0",
+  "description": "Videos microservice",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
+}
